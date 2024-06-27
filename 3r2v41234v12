@@ -12,21 +12,12 @@ local function isAltAccount(player)
     return player.Name == Config.AltAccount
 end
 
-local function onChatMessage(player, message)
-    if isAltAccount(player) then  -- Only allow the alt account to trigger setup
-        if message == "!setup" then
-            setupCircle(player)
-        end
-    elseif isOwner(player) then  -- Owner can also trigger setup
-        if message == "!setup" then
-            warn("Only the alt account can trigger !setup.")
-        end
-    end
-end
-
 local function setupCircle(owner)
     local alt = game.Players:FindFirstChild(Config.AltAccount)
-    if not alt then return end
+    if not alt or not alt.Character or not alt.Character:FindFirstChild("HumanoidRootPart") then
+        warn("Alt account or its character is not available.")
+        return
+    end
     
     local center = owner.Character.HumanoidRootPart.Position
     local radius = 5
@@ -36,6 +27,16 @@ local function setupCircle(owner)
     local targetPosition = center + Vector3.new(offsetX, 0, offsetZ)
     alt.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition)
     alt.Character.HumanoidRootPart.Anchored = true  -- Makes them appear flying
+end
+
+local function onChatMessage(player, message)
+    if message == "!setup" then
+        if isAltAccount(player) then  -- Only allow the alt account to trigger setup
+            setupCircle(player)
+        elseif isOwner(player) then  -- Owner can also trigger setup
+            warn("Only the alt account can trigger !setup.")
+        end
+    end
 end
 
 game.Players.PlayerAdded:Connect(function(player)
