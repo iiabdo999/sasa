@@ -1,0 +1,45 @@
+-- CombinedScript.lua
+local Config = {
+    Owner = "MeAccountdeletedsad",  -- Replace with your Roblox username
+    AltAccount = "HI_FOXX2"  -- Replace with your alt account's username
+}
+
+local function isOwner(player)
+    return player.Name == Config.Owner
+end
+
+local function isAltAccount(player)
+    return player.Name == Config.AltAccount
+end
+
+local function onChatMessage(player, message)
+    if isAltAccount(player) then  -- Only allow the alt account to trigger setup
+        if message == "!setup" then
+            setupCircle(player)
+        end
+    elseif isOwner(player) then  -- Owner can also trigger setup
+        if message == "!setup" then
+            warn("Only the alt account can trigger !setup.")
+        end
+    end
+end
+
+local function setupCircle(owner)
+    local alt = game.Players:FindFirstChild(Config.AltAccount)
+    if not alt then return end
+    
+    local center = owner.Character.HumanoidRootPart.Position
+    local radius = 5
+    
+    local offsetX = radius
+    local offsetZ = 0
+    local targetPosition = center + Vector3.new(offsetX, 0, offsetZ)
+    alt.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition)
+    alt.Character.HumanoidRootPart.Anchored = true  -- Makes them appear flying
+end
+
+game.Players.PlayerAdded:Connect(function(player)
+    player.Chatted:Connect(function(message)
+        onChatMessage(player, message)
+    end)
+end)
