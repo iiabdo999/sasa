@@ -44,3 +44,4 @@ game.Players.PlayerAdded:Connect(function(player)
         onChatMessage(player, message)
     end)
 end)
+-- done edit
